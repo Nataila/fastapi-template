@@ -13,9 +13,8 @@
 
 from fastapi import APIRouter
 from api.v1.home import home, home_backup
-from api.v1.admin import admin
-# from api.v1.profile import profile
+from api.v1.user import user
 
 api_v1 = APIRouter()
 
-api_v1.include_router(admin.router, tags=["后台管理"])
+api_v1.include_router(user.router, tags=["用户管理"])
