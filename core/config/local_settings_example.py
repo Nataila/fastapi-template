@@ -12,9 +12,10 @@
 """
 from typing import Union, Optional
 from pydantic import AnyHttpUrl, BaseSettings, IPvAnyAddress
+from .config import Config as productionConfig
 
 
-class Config(BaseSettings):
+class Config(productionConfig):
     # 文档地址
     DOCS_URL: str = "/api/v1/docs"
     # # 文档关联请求数据接口
@@ -23,7 +24,7 @@ class Config(BaseSettings):
     REDOC_URL: Optional[str] = None
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-    SECRET_KEY: str = 'aeq)s(*&dWEQasd8**&^9asda_asdasd*&*&^+_sda'
+    SECRET_KEY: str = ''
 
     # Mongodb配置
     MONGODB = {
@@ -39,6 +40,18 @@ class Config(BaseSettings):
         'password': '',
         'decode_responses': True,
     }
+
+    EMAIL_CONF = {
+        # 发邮件配置
+        'HOST': 'smtp.163.com',
+        'PORT': 465,
+        'HOST_USER': '',
+        'HOST_PASSWORD': '',
+        'EMAIL_TIMEOUT': 120,
+        'DEFAULT_FROM_EMAIL': 'xx@163.com <xx@163.com>'
+    }
+
+
 
 
 config = Config()

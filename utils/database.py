@@ -2,11 +2,11 @@
 # coding: utf-8
 # cc@2020/08/28
 
-from settings import config
+from core.config import settings
 from redis import Redis
 from pymongo import MongoClient
 
-client = MongoClient(**config.MONGODB)
+client = MongoClient(**settings.MONGODB)
 db = client['pyq']
 
-redis = Redis(**config.REDIS)
+redis = Redis(**settings.REDIS)

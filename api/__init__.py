@@ -19,7 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.v1 import api_v1
 from extensions import logger
-from settings import config
+from core.config import settings
 from utils.custom_exc import PostParamsError, TokenAuthError  # 自定义异常
 
 # swigger 文档分类 https://fastapi.tiangolo.com/tutorial/metadata/
@@ -36,9 +36,9 @@ def create_app():
         title="FastAPI",
         description="更多信息查看 https://www.charmcode.cn/article/2020-06-08_vue_mall_api ",
         version="0.1.1",
-        docs_url=config.DOCS_URL,
-        openapi_url=config.OPENAPI_URL,
-        redoc_url=config.REDOC_URL,
+        docs_url=settings.DOCS_URL,
+        openapi_url=settings.OPENAPI_URL,
+        redoc_url=settings.REDOC_URL,
         openapi_tags=tags_metadata
     )
 
