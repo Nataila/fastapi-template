@@ -10,22 +10,10 @@
 开发环境配置
 
 """
-from typing import Union, Optional
-from pydantic import AnyHttpUrl, BaseSettings, IPvAnyAddress
-from .config import Config as productionConfig
+from .settings import Settings as mainSettings
 
 
-class Config(productionConfig):
-    # 文档地址
-    DOCS_URL: str = "/api/v1/docs"
-    # # 文档关联请求数据接口
-    OPENAPI_URL: str = "/api/v1/openapi.json"
-    # 禁用 redoc 文档
-    REDOC_URL: Optional[str] = None
-
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
-    SECRET_KEY: str = ''
-
+class Settings(mainSettings):
     # Mongodb配置
     MONGODB = {
         'host': '127.0.0.1',
@@ -45,13 +33,11 @@ class Config(productionConfig):
         # 发邮件配置
         'HOST': 'smtp.163.com',
         'PORT': 465,
-        'HOST_USER': '',
-        'HOST_PASSWORD': '',
+        'HOST_USER': 'xxx@163.com',
+        'HOST_PASSWORD': '******',
         'EMAIL_TIMEOUT': 120,
-        'DEFAULT_FROM_EMAIL': 'xx@163.com <xx@163.com>'
+        'DEFAULT_FROM_EMAIL': 'xxx@163.com <xxx@163.com>'
     }
 
 
-
-
-config = Config()
+settings = Settings()
