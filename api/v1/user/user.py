@@ -6,11 +6,13 @@
 from fastapi import APIRouter
 
 from extensions import logger
-from utils import response_code, tools
-from utils.database import db, redis
+from pydantic import BaseModel
 from werkzeug.security import check_password_hash
 
-from pydantic import BaseModel
+from utils import response_code, tools
+from utils.database import db, redis
+
+from utils.mailing import send_test_email, send_new_account_email
 
 router = APIRouter()
 
@@ -35,3 +37,9 @@ def login(user: User):
         return response_code.resp_200({'token': token, 'username': username, 'id': uid})
     except Exception as e:
         return response_code.resp_401()
+
+
+@router.post('/send/mail/')
+def send_mail(to: str):
+    send_new_account_email(to, 'cc', '123123')
+    return response_code.resp_200('ok')
