@@ -1,12 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Time    : 2020/6/16 10:15
-# @Author  : CoderCharm
-# @File    : production_config.py
-# @Software: PyCharm
-# @Desc    :
-"""
-"""
+
 import os
 
 from typing import Union, Optional
@@ -27,6 +22,7 @@ class Settings(BaseSettings):
 
     # 发送邮件配置
     SMTP_TLS: bool = True
+    SMTP_SSL: bool = False
     SMTP_PORT: Optional[int] = None
     SMTP_HOST: Optional[str] = None
     SMTP_USER: Optional[str] = None
@@ -34,7 +30,8 @@ class Settings(BaseSettings):
     EMAILS_FROM_EMAIL: Optional[EmailStr] = None
     EMAILS_FROM_NAME: Optional[str] = None
 
-    EMAIL_TEMPLATES_DIR = "/opt/outsource/fastapi-template/utils/templates/email"
+    EMAIL_TEMPLATES_DIR = ""
     EMAILS_ENABLED: bool = True
+    EMAILS_TIMEOUT: int = 60
 
 settings = Settings()

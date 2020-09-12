@@ -12,7 +12,7 @@ from werkzeug.security import check_password_hash
 from utils import response_code, tools
 from utils.database import db, redis
 
-from utils.mailing import send_test_email, send_new_account_email
+from utils.mailing import send_code
 
 router = APIRouter()
 
@@ -41,5 +41,6 @@ def login(user: User):
 
 @router.post('/send/mail/')
 def send_mail(to: str):
-    send_new_account_email(to, 'cc', '123123')
+    code = tools.new_token(3)
+    send_code(to, code)
     return response_code.resp_200('ok')

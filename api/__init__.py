@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Time    : 2020/6/5 17:36
-# @Author  : CoderCharm
-# @File    : __init__.py.py
-# @Software: PyCharm
 # @Desc    :
 """
 模仿flask 工厂模式目录结构
@@ -26,7 +23,7 @@ from utils.custom_exc import PostParamsError, TokenAuthError  # 自定义异常
 tags_metadata = [
     {
         "name": "首页API",
-        "description": "商品首页数据API",
+        "description": "首页数据API",
     },
 ]
 
