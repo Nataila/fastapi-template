@@ -15,5 +15,5 @@ try:
     print("----------已启动------------")
 except ModuleNotFoundError:
     print('-------------------------------')
-    print('please mv local_settings_example.py local_settings.py and setting it!!!')
+    print('please cp local_settings_example.py local_settings.py and setting it!!!')
     print('-------------------------------')
