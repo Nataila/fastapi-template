@@ -34,4 +34,26 @@ class Settings(BaseSettings):
     EMAILS_ENABLED: bool = True
     EMAILS_TIMEOUT: int = 60
 
+    CODE_KEY = 'code:'
+    # 验证码失效时间 10分钟
+    CODE_KEY_EXPIRE = 60 * 10
+
+    # Mongodb配置
+    MONGODB = {
+        'host': '127.0.0.1',
+        'port': 27017,
+    }
+
+    MONGODB_DB = 'fastapi'
+
+    # redis配置
+    REDIS = {
+        'host': '127.0.0.1',
+        'port': 6379,
+        'db': '5',
+        'password': '',
+        'decode_responses': True,
+    }
+
+
 settings = Settings()

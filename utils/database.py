@@ -7,6 +7,6 @@ from redis import Redis
 from pymongo import MongoClient
 
 client = MongoClient(**settings.MONGODB)
-db = client['pyq']
+db = client[settings.MONGODB_DB]
 
 redis = Redis(**settings.REDIS)
