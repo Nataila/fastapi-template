@@ -17,3 +17,4 @@ except ModuleNotFoundError:
     print('-------------------------------')
     print('please cp local_settings_example.py local_settings.py and setting it!!!')
     print('-------------------------------')
+    from .settings import settings
