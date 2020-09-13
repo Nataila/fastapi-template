@@ -25,12 +25,12 @@ from fastapi.responses import JSONResponse, Response, ORJSONResponse
 from typing import Union
 
 
-def resp_200(data: Union[list, dict, str]=None, *, message: str="Success") -> dict:
+def resp_200(data: Union[list, dict, str] = None, *, message: str = "Success") -> dict:
     return {
-            'code': 200,
-            'message': message,
-            'data': data,
-        }
+        'code': 200,
+        'message': message,
+        'data': data,
+    }
 
 
 def resp_403(data: str = None) -> Response:
@@ -40,7 +40,7 @@ def resp_403(data: str = None) -> Response:
             'code': 403,
             'message': "Forbidden",
             'data': data,
-        }
+        },
     )
 
 
@@ -51,7 +51,7 @@ def resp_401() -> Response:
             'code': 401,
             'message': "Authentication failed",
             'data': '认证失败',
-        }
+        },
     )
 
 
@@ -62,7 +62,7 @@ def resp_404(data: str = None) -> Response:
             'code': 404,
             'message': "Page Not Found",
             'data': data,
-        }
+        },
     )
 
 
@@ -73,7 +73,7 @@ def resp_500(data: str = None) -> Response:
             'code': "500",
             'message': "Server internal error",
             'data': data,
-        }
+        },
     )
 
 
@@ -85,5 +85,5 @@ def resp_5000(data: Union[list, dict, str]) -> Response:
             'code': 5000,
             'message': "Token failure",
             'data': data,
-        }
+        },
     )

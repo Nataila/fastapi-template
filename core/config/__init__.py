@@ -11,6 +11,7 @@ local_settings 配置本地敏感配置，比如私钥、密码等
 
 try:
     from .local_settings import settings
+
     print("----------已启动------------")
 except ModuleNotFoundError:
     print('-------------------------------')

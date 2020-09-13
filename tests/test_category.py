@@ -27,10 +27,7 @@ def test_category():
 
 
 def test_category_tab():
-    response = client.get(
-        "/api/v1/category/tab",
-        params={"cateId": 1}
-    )
+    response = client.get("/api/v1/category/tab", params={"cateId": 1})
     assert response.status_code == 200
     print(response.json())
     assert response.json().get("code") == 200
@@ -39,12 +36,7 @@ def test_category_tab():
 def test_category_goods():
     response = client.post(
         "/api/v1/category/goods",
-        json={
-            "page": 1,
-            "pageSize": 10,
-            "cateId": 1,
-            "tabId": 1005
-        }
+        json={"page": 1, "pageSize": 10, "cateId": 1, "tabId": 1005},
     )
     assert response.status_code == 200
     print(response.json())

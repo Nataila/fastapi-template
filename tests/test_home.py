@@ -45,12 +45,7 @@ def test_tab():
 
 def test_goods():
     response = client.get(
-        "/api/v1/home/goods",
-        params={
-            "tabId": 0,
-            "page": 1,
-            "pageSize": 10
-        }
+        "/api/v1/home/goods", params={"tabId": 0, "page": 1, "pageSize": 10}
     )
     assert response.status_code == 200
     assert response.json().get("code") == 200

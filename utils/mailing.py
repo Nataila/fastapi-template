@@ -16,6 +16,7 @@ from emails.template import JinjaTemplate
 
 from core.config import settings
 
+
 @job('default', connection=Redis(), timeout=settings.EMAILS_TIMEOUT)
 def send_email(
     email_to: str,
@@ -42,6 +43,7 @@ def send_email(
     response = message.send(to=email_to, render=environment, smtp=smtp_options)
     print(response)
     logging.info(f"send email result: {response}")
+
 
 def send_code(email_to: str, code: str) -> None:
     subject = f"fastapi验证码"

@@ -20,6 +20,7 @@ from pydantic import ValidationError
 from api.v1.schemas import TokenPayload
 from settings import config
 from utils import custom_exc
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -48,9 +49,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def check_jwt_token(
-     token: Optional[str] = Header(None)
-) -> Union[str, Any]:
+def check_jwt_token(token: Optional[str] = Header(None)) -> Union[str, Any]:
     """
     只解析验证token
     :param token:
@@ -58,10 +57,7 @@ def check_jwt_token(
     """
 
     try:
-        payload = jwt.decode(
-            token,
-            config.SECRET_KEY, algorithms=[ALGORITHM]
-        )
+        payload = jwt.decode(token, config.SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except (jwt.JWTError, ValidationError, AttributeError):
         raise custom_exc.TokenAuthError(err_desc="access token fail")

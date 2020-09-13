@@ -33,4 +33,3 @@ logger.add(log_path_error, rotation="12:00", retention="5 days", enqueue=True)
 
 
 __all__ = ["logger"]
-

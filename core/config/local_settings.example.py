@@ -36,7 +36,7 @@ class Settings(mainSettings):
         'HOST_USER': 'xxx@163.com',
         'HOST_PASSWORD': '******',
         'EMAIL_TIMEOUT': 120,
-        'DEFAULT_FROM_EMAIL': 'xxx@163.com <xxx@163.com>'
+        'DEFAULT_FROM_EMAIL': 'xxx@163.com <xxx@163.com>',
     }
 
 

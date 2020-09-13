@@ -28,5 +28,3 @@ def test_goods():
 
 if __name__ == '__main__':
     test_goods()
-
-

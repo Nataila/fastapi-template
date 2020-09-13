@@ -36,7 +36,7 @@ def create_app():
         docs_url=settings.DOCS_URL,
         openapi_url=settings.OPENAPI_URL,
         redoc_url=settings.REDOC_URL,
-        openapi_tags=tags_metadata
+        openapi_tags=tags_metadata,
     )
 
     app.include_router(
@@ -69,7 +69,9 @@ def register_exception(app: FastAPI):
         :param exc:
         :return:
         """
-        logger.error(f"参数查询异常\nURL:{request.url}\nHeaders:{request.headers}\n{traceback.format_exc()}")
+        logger.error(
+            f"参数查询异常\nURL:{request.url}\nHeaders:{request.headers}\n{traceback.format_exc()}"
+        )
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"code": 400, "data": {"tip": exc.err_desc}, "message": "fail"},
@@ -77,7 +79,9 @@ def register_exception(app: FastAPI):
 
     @app.exception_handler(TokenAuthError)
     async def token_exception_handler(request: Request, exc: TokenAuthError):
-        logger.error(f"参数查询异常\nURL:{request.url}\nHeaders:{request.headers}\n{traceback.format_exc()}")
+        logger.error(
+            f"参数查询异常\nURL:{request.url}\nHeaders:{request.headers}\n{traceback.format_exc()}"
+        )
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"code": 400, "data": None, "message": exc.err_desc},
@@ -85,23 +89,36 @@ def register_exception(app: FastAPI):
 
     # 捕获参数 验证错误
     @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    async def validation_exception_handler(
+        request: Request, exc: RequestValidationError
+    ):
         """
         捕获请求参数 验证错误
         :param request:
         :param exc:
         :return:
         """
-        logger.error(f"参数错误\nURL:{request.url}\nHeaders:{request.headers}\n{traceback.format_exc()}")
+        logger.error(
+            f"参数错误\nURL:{request.url}\nHeaders:{request.headers}\n{traceback.format_exc()}"
+        )
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content=jsonable_encoder({"code": 400, "data": {"tip": exc.errors()}, "body": exc.body, "message": "fail"}),
+            content=jsonable_encoder(
+                {
+                    "code": 400,
+                    "data": {"tip": exc.errors()},
+                    "body": exc.body,
+                    "message": "fail",
+                }
+            ),
         )
 
     # 捕获全部异常
     @app.exception_handler(Exception)
     async def all_exception_handler(request: Request, exc: Exception):
-        logger.error(f"全局异常\nURL:{request.url}\nHeaders:{request.headers}\n{traceback.format_exc()}")
+        logger.error(
+            f"全局异常\nURL:{request.url}\nHeaders:{request.headers}\n{traceback.format_exc()}"
+        )
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"code": 500, "data": {"tip": "服务器错误"}, "message": "fail"},
@@ -142,8 +159,10 @@ def register_middleware(app: FastAPI):
     @app.middleware("http")
     async def logger_request(request: Request, call_next):
         # https://stackoverflow.com/questions/60098005/fastapi-starlette-get-client-real-ip
-        logger.info(f"访问记录:{request.method} url:{request.url}\nheaders:{request.headers.get('user-agent')}"
-                    f"\nIP:{request.client.host}")
+        logger.info(
+            f"访问记录:{request.method} url:{request.url}\nheaders:{request.headers.get('user-agent')}"
+            f"\nIP:{request.client.host}"
+        )
 
         response = await call_next(request)
 

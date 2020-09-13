@@ -9,7 +9,9 @@ from pydantic import AnyHttpUrl, BaseSettings, IPvAnyAddress, EmailStr
 
 
 class Settings(BaseSettings):
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    BASE_DIR = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
     # 文档地址 成产环境可以关闭 None
     DOCS_URL: Optional[str] = "/api/v1/docs"
     # # 文档关联请求数据接口 成产环境可以关闭 None
