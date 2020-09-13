@@ -20,19 +20,17 @@ router = APIRouter()
 
 
 @router.post("/login/")
-def login(username: str, password: str):
+def login(user: user.UserSignin):
     '''登录'''
-    [username, passwd] = map(user.dict().get, ['username', 'password'])
+    [email, phone] = map(user.dict().get, ['email', 'phone'])
+    user = db.user.find_one({'$or': [{'email': email}, {'phone': phone}]})
     try:
-        db_user = db.user.find_one({'username': username})
-        assert db_user
-        pwhash = db_user['password']
-        passwd_check = check_password_hash(pwhash, passwd)
-        assert passwd_check
         token = tools.new_token(20)
-        uid = str(db_user['_id'])
+        uid = str(user['_id'])
         redis.set(token, uid)
-        return response_code.resp_200({'token': token, 'username': username, 'id': uid})
+        return response_code.resp_200(
+            {'token': token, 'email': email, 'phone': phone, 'id': uid}
+        )
     except Exception as e:
         return response_code.resp_401()
 

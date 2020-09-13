@@ -3,6 +3,7 @@ import re
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, validator
+from werkzeug.security import check_password_hash
 
 from utils.database import db, redis
 from core.config import settings
@@ -11,10 +12,28 @@ from core.config import settings
 # Shared properties
 class UserBase(BaseModel):
     email: Optional[EmailStr] = None
-    phone: Optional[EmailStr] = None
+    phone: str = None
     is_active: Optional[bool] = True
     is_superuser: bool = False
     full_name: Optional[str] = None
+
+
+class UserSignin(BaseModel):
+    email: Optional[EmailStr] = None
+    phone: str = None
+    password: str
+
+    @validator('password')
+    def user_is_valid(cls, password, values):
+        [email, phone] = map(values.get, ['email', 'phone'])
+        user = db.user.find_one({'$or': [{'email': email}, {'phone': phone}]})
+        if not user:
+            raise ValueError('账户或密码错误')
+        pwhash = user['password']
+        passwd_check = check_password_hash(pwhash, password)
+        if not passwd_check:
+            raise ValueError('账户或密码错误')
+        return password
 
 
 # Properties to receive via API on creation
