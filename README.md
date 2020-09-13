@@ -7,6 +7,8 @@ fastapi + MongoDB + pydantic + rq + uvicorn
 `set env`
 ### 安装依赖
 `pip install -r requirement.txt`
+### 本地配置
+`cp core/config/local_settings.example.py core/config/local_settings.py`
 ### 启动项目
 `python main.py`
 ### 启动worker(optional目前发送邮件需要)
