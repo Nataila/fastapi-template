@@ -71,7 +71,7 @@ class UserCreate(BaseModel):
             reg = "1[3|4|5|7|8][0-9]{9}"
             if not re.findall(reg, phone):
                 raise ValueError('手机号格式不正确')
-        return v
+        return phone
 
     @validator('code')
     def valid_code(cls, code, values):
