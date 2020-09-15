@@ -19,6 +19,33 @@ from core.config import settings
 router = APIRouter()
 
 
+@router.post("/forget/")
+def forget(username: str, email: str):
+    '''找回密码'''
+    [username, email] = map(user.dict().get, ['username', 'email'])
+    try:
+        db_user = db.user.find_one({'username': username})
+        assert db_user
+        code = tools.new_token(3)
+        send_mail_code(email)
+        return response_code.resp_200({'token': token, 'username': username })
+    except Exception as e:
+        return response_code.resp_401()
+
+@router.post("/newpasswd/")
+def newpasswd(email: str, code: str, newpass: str):
+    '''修改密码'''
+    flag = 'email'
+    redis_code = redis.get(f'{settings.CODE_KEY}{flag}')
+    if redis_code != code:
+        return response_code.resp_401()
+
+    encrypt_passwd = generate_password_hash(newpass)
+    db_user = db.user.find_one_and_update({'email': email},{'$set':{'password': encrypt_passwd}})
+    _id = str(db_user['_id'])
+    ctx = {'email': email,'id':_id }
+    return response_code.resp_200(ctx)
+
 @router.post("/login/")
 def login(user: user.UserSignin):
     '''登录'''
