@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     EMAILS_FROM_EMAIL: Optional[EmailStr] = None
     EMAILS_FROM_NAME: Optional[str] = None
 
-    EMAIL_TEMPLATES_DIR = ""
+    EMAIL_TEMPLATES_DIR = os.path.join(BASE_DIR, 'utils/templates/email')
     EMAILS_ENABLED: bool = True
     EMAILS_TIMEOUT: int = 60
 

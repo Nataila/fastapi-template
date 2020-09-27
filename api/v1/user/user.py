@@ -6,8 +6,7 @@
 from fastapi import APIRouter
 
 from extensions import logger
-from pydantic import BaseModel
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import generate_password_hash
 
 from utils import response_code, tools
 from utils.database import db, redis
@@ -19,7 +18,7 @@ from core.config import settings
 router = APIRouter()
 
 
-@router.post("/login/")
+@router.post("/account/login/", name='登录')
 def login(user: user.UserSignin):
     '''登录'''
     [email, phone] = map(user.dict().get, ['email', 'phone'])
@@ -31,11 +30,11 @@ def login(user: user.UserSignin):
         return response_code.resp_200(
             {'token': token, 'email': email, 'phone': phone, 'id': uid}
         )
-    except Exception as e:
+    except Exception:
         return response_code.resp_401()
 
 
-@router.post('/send/mail/code/')
+@router.post('/account/send/mail/code/', name="发送验证码")
 def send_mail_code(to: str):
     '''发送邮件验证码'''
     code = tools.new_token(3)
@@ -45,7 +44,7 @@ def send_mail_code(to: str):
     return response_code.resp_200('ok')
 
 
-@router.post('/signup/')
+@router.post('/account/signup/', name='注册')
 def signup(user: user.UserCreate):
     '''注册'''
     [email, phone, password1] = map(user.dict().get, ['email', 'phone', 'password1'])
