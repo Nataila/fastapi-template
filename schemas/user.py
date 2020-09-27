@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 from typing import Optional
 
@@ -7,6 +8,13 @@ from werkzeug.security import check_password_hash
 
 from utils.database import db, redis
 from core.config import settings
+
+class MessageBase(BaseModel):
+    message_from: str = None
+    message_to: str = None 
+    message_content: str = None
+    message_status: Optional[bool] = False
+    message_date: datetime
 
 
 # Shared properties

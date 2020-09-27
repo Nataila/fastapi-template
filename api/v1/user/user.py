@@ -3,6 +3,7 @@
 # cc@2020/08/28
 
 
+import time
 from fastapi import APIRouter
 
 from extensions import logger
@@ -15,9 +16,50 @@ from utils.mailing import send_code
 
 from schemas import user
 from core.config import settings
+from pymongo import ReturnDocument
 
 router = APIRouter()
 
+
+@router.post("/read/message/")
+def sendmessage(message: user.MessageBase):
+    [message_from, message_to, message_content, message_date] = \
+            map(message.dict().get, ['message_from', 'message_to', 'message_content', 'message_date'])
+    try:
+        _id = db.messages.find_one_and_update({
+            'message_from': message_from, 
+            'message_to': message_to,
+            'message_content': message_content}, {'$set':{
+            'message_status': True,
+            'message_date': message_date
+            }},
+            retrundocument=ReturnDocument.AFTER)
+        assert _id
+        logger.info(f'del {message_from} send {message_content} to {message_to} ')
+        redis.delete(f'{settings.MESSAGE_KEY}{message_from}:{message_to}', message_content)
+        ctx = {'code':'200', 'id': str(_id)}
+        return response_code.resp_200(ctx)
+    except Exception as e:
+        return response_code.resp_500()
+
+# 系统生成message,可以弃用
+@router.post("/send/message/")
+def sendmessage(message: user.MessageBase):#_from: str, message_to: str, message_content: str):
+    [message_from, message_to, message_content, message_status, message_date] = \
+            map(message.dict().get, ['message_from', 'message_to', 'message_content', 'message_status', 'message_date'])
+
+    print(message_from, message_to, message_content, message_status, message_date)
+    _id = db.messages.insert({
+        'message_from': message_from, 
+        'message_to': message_to,
+        'message_content': message_content,
+        'message_status': False,
+        'message_date': time.time() 
+        })
+    logger.info(f'{message_from} send {message_content} to {message_to} ')
+    redis.set(f'{settings.MESSAGE_KEY}{message_from}:{message_to}', message_content)
+    ctx = {'code':'200', 'id': str(_id)}
+    return response_code.resp_200(ctx)
 
 @router.post("/forget/")
 def forget(username: str, email: str):
@@ -28,23 +70,26 @@ def forget(username: str, email: str):
         assert db_user
         code = tools.new_token(3)
         send_mail_code(email)
-        return response_code.resp_200({'token': token, 'username': username })
+        return response_code.resp_200({'code': code, 'username': username })
     except Exception as e:
         return response_code.resp_401()
 
 @router.post("/newpasswd/")
-def newpasswd(email: str, code: str, newpass: str):
+def newpasswd(email: str, code: str, newpass: str, newpass2:str):
     '''修改密码'''
-    flag = 'email'
+    if newpass != newpass2:
+        return response_code.res_5000('密码不一致')
+    flag = email
     redis_code = redis.get(f'{settings.CODE_KEY}{flag}')
     if redis_code != code:
-        return response_code.resp_401()
+        return response_code.resp_5000('验证码不正确')
 
     encrypt_passwd = generate_password_hash(newpass)
-    db_user = db.user.find_one_and_update({'email': email},{'$set':{'password': encrypt_passwd}})
+    db_user = db.user.find_one_and_update({'email': email}, {'$set':{'password': encrypt_passwd}},
+            retrundocument=ReturnDocument.AFTER)
     _id = str(db_user['_id'])
-    ctx = {'email': email,'id':_id }
-    return response_code.resp_200(ctx)
+    ctx = {'email': email, 'id':_id }
+    return response_code.resp_200('修改成功')
 
 @router.post("/login/")
 def login(user: user.UserSignin):
