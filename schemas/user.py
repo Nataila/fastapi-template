@@ -86,3 +86,14 @@ class UserCreate(BaseModel):
 # Properties to receive via API on update
 class UserUpdate(UserBase):
     password: Optional[str] = None
+
+
+class ChangePwd(BaseModel):
+    old_password: str
+    new_password1: str
+    new_password2: str
+    @validator('new_password2')
+    def valid_password2(cls, pwd2, values):
+        if pwd2 != values.get('new_password1'):
+            raise ValueError('两次密码不一致')
+        return pwd2

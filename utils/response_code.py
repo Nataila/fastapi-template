@@ -45,13 +45,28 @@ def resp_403(data: str = None) -> Response:
 
 
 def resp_401() -> Response:
-    return ORJSONResponse(
+    return JSONResponse(
         status_code=status.HTTP_401_UNAUTHORIZED,
         content={
             'code': 401,
             'message': "Authentication failed",
             'data': '认证失败',
         },
+    )
+
+
+def resp_422(data: str) -> Response:
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content = {
+            "errors": [
+                {
+                    "loc": [],
+                    "msg": data,
+                    "type": "value_error"
+                }
+            ]
+        }
     )
 
 

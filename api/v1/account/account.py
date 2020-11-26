@@ -3,12 +3,12 @@
 # cc@2020/08/28
 
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from extensions import logger
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
-from utils import response_code, tools
+from utils import response_code, tools, depends
 from utils.database import db, redis
 from utils.mailing import send_code
 
@@ -52,3 +52,15 @@ def signup(user: user.UserCreate):
     _id = db.user.insert({'email': email, 'phone': phone, 'password': encrypt_passwd})
     ctx = {'email': email, 'phone': phone, 'id': str(_id)}
     return response_code.resp_200(ctx)
+
+
+@router.post('/account/changepwd/', name='修改密码')
+def changepwd(passwd:user.ChangePwd, user: dict = Depends(depends.token_is_true)):
+    '''修改密码'''
+    pwhash = user['password']
+    old_password = passwd.old_password
+    passwd_check = check_password_hash(pwhash, old_password)
+    if not passwd_check:
+        return response_code.resp_422('密码不正确')
+    db.user.find_one_and_update(user, {'$set': {'password': generate_password_hash(passwd.new_password2)}})
+    return response_code.resp_200('ok')
