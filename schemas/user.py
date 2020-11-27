@@ -26,7 +26,10 @@ class UserSignin(BaseModel):
     @validator('password')
     def user_is_valid(cls, password, values):
         [email, phone] = map(values.get, ['email', 'phone'])
-        user = db.user.find_one({'$or': [{'email': email}, {'phone': phone}]})
+        if email:
+            user = db.user.find_one({'email': email})
+        else:
+            user = db.user.find_one({'phone': phone})
         if not user:
             raise ValueError('账户或密码错误')
         pwhash = user['password']
@@ -63,7 +66,7 @@ class UserCreate(BaseModel):
     def email_or_phone_exists(cls, phone, values, **kwargs):
         email = values.get('email')
         is_exists = db.user.find({'phone': phone}).count()
-        if is_exists:
+        if phone and is_exists:
             raise ValueError('该用户已存在')
         if email and phone:
             raise ValueError('邮箱和手机只能选一')
@@ -92,6 +95,35 @@ class ChangePwd(BaseModel):
     old_password: str
     new_password1: str
     new_password2: str
+
+    @validator('new_password2')
+    def valid_password2(cls, pwd2, values):
+        if pwd2 != values.get('new_password1'):
+            raise ValueError('两次密码不一致')
+        return pwd2
+
+
+class ForgetPwd(BaseModel):
+    email: EmailStr
+    code: str
+    new_password1: str
+    new_password2: str
+
+    @validator('email')
+    def email_is_exists(cls, email):
+        is_exists = db.user.find({'email': email}).count()
+        if not is_exists:
+            raise ValueError('该用户不存在')
+        return email
+
+    @validator('code')
+    def valid_code(cls, code, values):
+        email = values.get('email')
+        redis_code = redis.get(f'{settings.CODE_KEY}{email}')
+        if redis_code != code:
+            raise ValueError('验证码不正确')
+        return code
+
     @validator('new_password2')
     def valid_password2(cls, pwd2, values):
         if pwd2 != values.get('new_password1'):

@@ -7,6 +7,7 @@
 
 """
 import traceback
+from datetime import datetime
 
 from fastapi import FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
@@ -17,16 +18,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.v1 import api_v1
 from extensions import logger
 from core.config import settings
-from utils.custom_exc import PostParamsError, TokenAuthError, http422_error_handler  # 自定义异常
+from utils.custom_exc import (
+    PostParamsError,
+    TokenAuthError,
+    http422_error_handler,
+)  # 自定义异常
 
+from redis import Redis
+from rq import Queue
+from rq_scheduler import Scheduler
 
 # swigger 文档分类 https://fastapi.tiangolo.com/tutorial/metadata/
 tags_metadata = [
-    {
-        "name": "API",
-        "description": "数据API",
-        "version": "v1.0.0",
-    },
+    {"name": "API", "description": "数据API", "version": "v1.0.0",},
 ]
 
 
@@ -164,7 +168,8 @@ def register_middleware(app: FastAPI):
     async def logger_request(request: Request, call_next):
         # https://stackoverflow.com/questions/60098005/fastapi-starlette-get-client-real-ip
         logger.info(
-            f"访问记录:{request.method} url:{request.url}\nheaders:{request.headers.get('user-agent')}"
+            f"访问记录:{request.method}"
+            f" url:{request.url}\nheaders:{request.headers.get('user-agent')}"
             f"\nIP:{request.client.host}"
         )
 

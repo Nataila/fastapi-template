@@ -3,10 +3,11 @@
 # cc@2020/08/28
 
 
-from fastapi import APIRouter, Depends
+import json
 
-from extensions import logger
+from fastapi import APIRouter, Depends
 from werkzeug.security import generate_password_hash, check_password_hash
+from bson import json_util, ObjectId
 
 from utils import response_code, tools, depends
 from utils.database import db, redis
@@ -14,6 +15,7 @@ from utils.mailing import send_code
 
 from schemas import user
 from core.config import settings
+from extensions import logger
 
 router = APIRouter()
 
@@ -49,18 +51,51 @@ def signup(user: user.UserCreate):
     '''注册'''
     [email, phone, password1] = map(user.dict().get, ['email', 'phone', 'password1'])
     encrypt_passwd = generate_password_hash(password1)
-    _id = db.user.insert({'email': email, 'phone': phone, 'password': encrypt_passwd})
+    insert_data = {
+        'email': email,
+        'phone': phone,
+        'password': encrypt_passwd,
+        'group': 0,  # 0: 普通用户，1: 管理员
+    }
+    _id = db.user.insert(insert_data)
     ctx = {'email': email, 'phone': phone, 'id': str(_id)}
     return response_code.resp_200(ctx)
 
 
 @router.post('/account/changepwd/', name='修改密码')
-def changepwd(passwd:user.ChangePwd, user: dict = Depends(depends.token_is_true)):
+def change_pwd(passwd: user.ChangePwd, user: dict = Depends(depends.token_is_true)):
     '''修改密码'''
     pwhash = user['password']
     old_password = passwd.old_password
     passwd_check = check_password_hash(pwhash, old_password)
     if not passwd_check:
         return response_code.resp_422('密码不正确')
-    db.user.find_one_and_update(user, {'$set': {'password': generate_password_hash(passwd.new_password2)}})
+    db.user.find_one_and_update(
+        user, {'$set': {'password': generate_password_hash(passwd.new_password2)}}
+    )
     return response_code.resp_200('ok')
+
+
+@router.post('/account/forget/', name='忘记密码')
+def forget_passwd(passwd: user.ForgetPwd):
+    email = passwd.email
+    db.user.find_one_and_update(
+        {'email': email},
+        {'$set': {'password': generate_password_hash(passwd.new_password2)}},
+    )
+    return response_code.resp_200('ok')
+
+
+@router.get('/account/list/', name='用户列表')
+def user_list(skip: int = 0, limit: int = 50, user: dict = Depends(depends.is_superuser)):
+    data = list(db.user.find().skip(skip).limit(limit))
+    data = json.loads(json_util.dumps(data))
+    return response_code.resp_200(data)
+
+
+@router.get('/account/me/', name='用户详情')
+def user_list(user: dict = Depends(depends.token_is_true)):
+    user['id'] = str(user['_id'])
+    user.pop('_id')
+    user.pop('password')
+    return response_code.resp_200(user)
