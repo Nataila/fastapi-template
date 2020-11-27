@@ -94,8 +94,13 @@ def user_list(skip: int = 0, limit: int = 50, user: dict = Depends(depends.is_su
 
 
 @router.get('/account/me/', name='用户详情')
-def user_list(user: dict = Depends(depends.token_is_true)):
+def user_detail(user: dict = Depends(depends.token_is_true)):
     user['id'] = str(user['_id'])
     user.pop('_id')
     user.pop('password')
     return response_code.resp_200(user)
+
+
+@router.post('/account/{uid}/', name='更改用户组')
+def user_modify_group(user: dict = Depends(depends.is_superuser)):
+    return response_code.resp_200('ok')
