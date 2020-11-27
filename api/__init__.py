@@ -24,10 +24,6 @@ from utils.custom_exc import (
     http422_error_handler,
 )  # 自定义异常
 
-from redis import Redis
-from rq import Queue
-from rq_scheduler import Scheduler
-
 # swigger 文档分类 https://fastapi.tiangolo.com/tutorial/metadata/
 tags_metadata = [
     {"name": "API", "description": "数据API", "version": "v1.0.0",},

@@ -13,6 +13,8 @@ fastapi + MongoDB + pydantic + rq + uvicorn
 `python main.py`
 ### 启动worker(optional目前发送邮件需要)
 `rq worker`
+### crontab任务
+`python crontab/tasks.py`
 
 # 部署
 **todo**
