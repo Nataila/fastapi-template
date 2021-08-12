@@ -56,6 +56,7 @@ class Settings(BaseSettings):
         'password': '',
         'decode_responses': True,
     }
+    STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 
 settings = Settings()
