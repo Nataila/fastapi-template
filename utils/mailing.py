@@ -45,7 +45,7 @@ def send_email(
 
 
 def send_code(email_to: str, code: str) -> None:
-    subject = f"fastapi验证码"
+    subject = f"{settings.SITE_NAME}验证码"
     with open(Path(settings.EMAIL_TEMPLATES_DIR) / "code.html") as f:
         template_str = f.read()
     send_email.delay(

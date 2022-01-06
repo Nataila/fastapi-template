@@ -9,6 +9,7 @@ from pydantic import AnyHttpUrl, BaseSettings, IPvAnyAddress, EmailStr
 
 
 class Settings(BaseSettings):
+    SITE_NAME = 'FASTAPI'
     BASE_DIR = os.path.dirname(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     )

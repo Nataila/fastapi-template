@@ -20,7 +20,7 @@ from extensions import logger
 router = APIRouter()
 
 
-@router.post("/account/login/", name='登录')
+@router.post("login/", name='登录')
 def login(user: user.UserSignin):
     '''登录'''
     [email, phone] = map(user.dict().get, ['email', 'phone'])
@@ -36,7 +36,7 @@ def login(user: user.UserSignin):
         return response_code.resp_401()
 
 
-@router.post('/account/send/mail/code/', name="发送验证码")
+@router.post('send/mail/code/', name="发送验证码")
 def send_mail_code(to: str):
     '''发送邮件验证码'''
     code = tools.new_token(3)
@@ -46,7 +46,7 @@ def send_mail_code(to: str):
     return response_code.resp_200('ok')
 
 
-@router.post('/account/signup/', name='注册')
+@router.post('signup/', name='注册')
 def signup(user: user.UserCreate):
     '''注册'''
     [email, phone, password1] = map(user.dict().get, ['email', 'phone', 'password1'])
@@ -62,7 +62,7 @@ def signup(user: user.UserCreate):
     return response_code.resp_200(ctx)
 
 
-@router.post('/account/changepwd/', name='修改密码')
+@router.post('changepwd/', name='修改密码')
 def change_pwd(passwd: user.ChangePwd, user: dict = Depends(depends.token_is_true)):
     '''修改密码'''
     pwhash = user['password']
@@ -76,7 +76,7 @@ def change_pwd(passwd: user.ChangePwd, user: dict = Depends(depends.token_is_tru
     return response_code.resp_200('ok')
 
 
-@router.post('/account/forget/', name='忘记密码')
+@router.post('forget/', name='忘记密码')
 def forget_passwd(passwd: user.ForgetPwd):
     email = passwd.email
     db.user.find_one_and_update(
@@ -86,14 +86,14 @@ def forget_passwd(passwd: user.ForgetPwd):
     return response_code.resp_200('ok')
 
 
-@router.get('/account/list/', name='用户列表')
+@router.get('list/', name='用户列表')
 def user_list(skip: int = 0, limit: int = 50, user: dict = Depends(depends.is_superuser)):
     data = list(db.user.find().skip(skip).limit(limit))
     data = json.loads(json_util.dumps(data))
     return response_code.resp_200(data)
 
 
-@router.get('/account/me/', name='用户详情')
+@router.get('me/', name='用户详情')
 def user_detail(user: dict = Depends(depends.token_is_true)):
     user['id'] = str(user['_id'])
     user.pop('_id')
@@ -101,6 +101,6 @@ def user_detail(user: dict = Depends(depends.token_is_true)):
     return response_code.resp_200(user)
 
 
-@router.post('/account/{uid}/', name='更改用户组')
+@router.post('{uid}/', name='更改用户组')
 def user_modify_group(user: dict = Depends(depends.is_superuser)):
     return response_code.resp_200('ok')

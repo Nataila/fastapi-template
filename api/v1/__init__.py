@@ -12,4 +12,4 @@ from api.v1.account import account
 
 api_v1 = APIRouter()
 
-api_v1.include_router(account.router, tags=["用户管理"])
+api_v1.include_router(account.router, prefix='/account', tags=["用户管理"])
